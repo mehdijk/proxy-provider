@@ -4,11 +4,12 @@ import aiohttp
 from Proxy_List_Scrapper import Scrapper
 import logging
 
-import aiohttp_socks
 import requests
 
 class ProxyProvider:
-    logger = logging.getLogger()
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__name__)
+
     test_url = "https://divar.ir"
     timeout_sec = 60
 
@@ -42,11 +43,11 @@ class ProxyProvider:
         try:
             scrapper = Scrapper(category='ALL', print_err_trace=False)
             data = scrapper.getProxies()
-            print(f'{len(data.proxies)} proxies are fetched from the Scrapper.')
+            self.logger.info(f'{len(data.proxies)} proxies are fetched from the Scrapper.')
             proxies_with_type = [{'ip': proxy.ip, 'port': proxy.port, 'type': 'http'} for proxy in data.proxies]
             return proxies_with_type
         except Exception as e:
-            print(f"An error occurred while fetching proxies: {str(e)}")
+            self.logger.error(f"An error occurred while fetching proxies: {str(e)}")
             return []
         
     def fetch_proxies_from_geonode(self):
@@ -55,14 +56,14 @@ class ProxyProvider:
             response = requests.get(url)
             if response.status_code == 200:
                 proxies_data = response.json().get('data', [])
-                print(f"{len(proxies_data)} proxies are fetched from the geonode.")
+                self.logger.info(f"{len(proxies_data)} proxies are fetched from the geonode.")
                 proxies_with_type = [{'ip': proxy['ip'], 'port': proxy['port'], 'type': proxy['protocols'][0]} for proxy in proxies_data]
                 return proxies_with_type
             else:
-                print(f"Failed to fetch proxies. Status code: {response.status_code}")
+                self.logger.error(f"Failed to fetch proxies. Status code: {response.status_code}")
                 return []
         except Exception as e:
-            print(f"An error occurred while fetching proxies: {str(e)}")
+            self.logger.error(f"An error occurred while fetching proxies: {str(e)}")
             return []
     
     def fetch_proxies_from_TheSpeedX(self):
@@ -79,12 +80,12 @@ class ProxyProvider:
                 if response.status_code == 200:
                     proxy_list = response.text.split('\n')
                     proxy_list = [proxy.strip() for proxy in proxy_list if proxy.strip()]
-                    print(f"{len(proxy_list)} {protocol} proxies are fetched from TheSpeedX.")
+                    self.logger.info(f"{len(proxy_list)} {protocol} proxies are fetched from TheSpeedX.")
                     proxies.extend([{'ip': proxy.split(':')[0], 'port': proxy.split(':')[1], 'type': protocol.lower()} for proxy in proxy_list])
                 else:
-                    print(f"Failed to fetch {protocol} proxies. Status code: {response.status_code}")
+                    self.logger.error(f"Failed to fetch {protocol} proxies. Status code: {response.status_code}")
             except Exception as e:
-                print(f"An error occurred while fetching {protocol} proxies: {str(e)}")
+                self.logger.error(f"An error occurred while fetching {protocol} proxies: {str(e)}")
         return proxies
 
     def fetch_proxies(self):
