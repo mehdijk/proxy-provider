@@ -1,0 +1,16 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: Debug",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/push_proxies.py",
+            "env": {
+                "BASE_URL": "http://localhost:8890",
+                "USERNAME": "ndloqy2c0df6njvp7333",
+                "PASSWORD": "qr3mhcy7tghf64osi5zr"
+            }
+        }
+    ]
+}

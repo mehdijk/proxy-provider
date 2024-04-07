@@ -1,0 +1,3 @@
+requests==2.31.0
+aiohttp==3.9.3
+Proxy_List_Scrapper==0.2.2
