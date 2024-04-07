@@ -50,11 +50,11 @@ def add_proxies(username, password, connector_uuid, proxies):
     payload = []
     for proxy in proxies:
         proxy_payload = {
-            "key": f"{proxy.ip}:{proxy.port}",
-            "type": "http",
+            "key": f"{proxy['ip']}:{proxy['port']}",
+            "type": proxy['type'],
             "address": {
-                "hostname": proxy.ip,
-                "port": proxy.port
+                "hostname": proxy['ip'],
+                "port": proxy['port']
             }
         }
         payload.append(proxy_payload)
