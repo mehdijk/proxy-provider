@@ -30,12 +30,12 @@ class ProxyProvider:
         try:
             async with aiohttp.ClientSession() as session:
                 resp = await session.get(self.test_url, proxy=proxy_url, timeout=self.timeout_sec)
-                self.logger.info(f'{ipport} => {resp.status}')
+                #self.logger.info(f'{ipport} => {resp.status}')
                 if resp.status != 200:
                     raise Exception("Error")
                 return proxy
         except Exception as e:
-            self.logger.error(f'Error checking proxy {ipport}: {e}')
+            #self.logger.error(f'Error checking proxy {ipport}: {e}')
             return None
         
 

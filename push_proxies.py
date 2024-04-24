@@ -77,6 +77,26 @@ class PushProxies:
             logger.error(f"Failed to add proxies. Status code: {response.status_code}")
             logger.error(f"Response content: {response.text}")
 
+
+    def get_proxies_count(self, connector_uuid):
+        credentials = f"{self.username}:{self.password}"
+        credentials_encoded = base64.b64encode(credentials.encode()).decode()
+        endpoint = f"{self.base_url}/api/scraper/project/connectors/{connector_uuid}/freeproxies"
+        headers = {
+            "Authorization": f"Basic {credentials_encoded}",
+            "Content-Type": "application/json"
+        }
+        response = requests.get(endpoint, headers=headers)
+        if response.status_code == 200:
+            proxies = response.json()
+            proxies_count = len(proxies)
+            logger.info(f"Number of proxies for connector {connector_uuid}: {proxies_count}")
+            return proxies_count
+        else:
+            logger.error(f"Failed to fetch proxies. Status code: {response.status_code}")
+            logger.error(f"Response content: {response.text}")
+            return None
+
 async def fetch_good_proxies():
     provider = ProxyProvider()
     working_proxies = await provider.checkProxies()
@@ -97,9 +117,14 @@ if __name__ == "__main__":
     
     if connector_uuid:
         logger.info("UUID of the project: %s", connector_uuid)
-        proxies = asyncio.run(fetch_good_proxies())
-        if proxies:
-            push_proxies.add_proxies(connector_uuid, proxies)
-            push_proxies.remove_proxies(connector_uuid, duplicate=True)
+        push_proxies.remove_proxies(connector_uuid, only_offline=True)
+        proxies_count = push_proxies.get_proxies_count(connector_uuid)
+        if proxies_count<300:
+            proxies = asyncio.run(fetch_good_proxies())
+            if proxies:
+                push_proxies.add_proxies(connector_uuid, proxies)
+                push_proxies.remove_proxies(connector_uuid, duplicate=True)
+        else:
+            logger.info("Number of proxies is enough!")
     else:
         logger.error("Failed to retrieve project UUID.")

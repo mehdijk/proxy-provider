@@ -10,10 +10,12 @@ COPY push_proxies.py proxy_provider.py requirements.txt /app/
 # Install dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Set environment variables
-ENV BASE_URL="http://host.docker.internal:8890"
-ENV USERNAME="ndloqy2c0df6njvp7333"
-ENV PASSWORD="qr3mhcy7tghf64osi5zr"
+# Install cron
+RUN apt-get update && apt-get install -y cron
 
-# Run the Python script when the container launches
-CMD ["python", "push_proxies.py"]
+# Create a cron job to run the Python script every 1 hour
+RUN echo "0 * * * * root BASE_URL=http://93.186.251.59:8890 USERNAME=26cqm6gfmykqdrkqrzhrq PASSWORD=yglcntjavqp5ccuggqvh6r /usr/local/bin/python /app/push_proxies.py >> /etc/mycronlog.log 2>&1" >> /etc/crontab
+RUN chmod 0644 /etc/crontab
+
+# Run the command on container startup
+CMD ["cron", "-f"]
