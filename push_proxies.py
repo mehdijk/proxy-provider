@@ -117,9 +117,9 @@ if __name__ == "__main__":
     
     if connector_uuid:
         logger.info("UUID of the project: %s", connector_uuid)
-        push_proxies.remove_proxies(connector_uuid, only_offline=True)
+#        push_proxies.remove_proxies(connector_uuid, only_offline=True)
         proxies_count = push_proxies.get_proxies_count(connector_uuid)
-        if proxies_count<300:
+        if proxies_count<500:
             proxies = asyncio.run(fetch_good_proxies())
             if proxies:
                 push_proxies.add_proxies(connector_uuid, proxies)
